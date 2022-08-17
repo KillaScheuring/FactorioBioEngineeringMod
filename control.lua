@@ -11,15 +11,6 @@ end
 
 function On_Built(event)
     local first_player = game.players[1]
---first_player.print("Saved to monitored entity")
---first_player.print(type(event))
---    for k,v in pairs(event) do
---    first_player.print("k")
---    first_player.print(k)
---    first_player.print("v")
---    first_player.print(v)
---  end
---    first_player.print(event.created_entity)
     global.monitored_entity = global.monitored_entity or {}
     local entity = event.created_entity or event.entity
     table.insert(global.monitored_entity, {entity=entity})

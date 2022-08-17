@@ -4,42 +4,48 @@
 --- DateTime: 8/13/2022 8:43 PM
 ---
 --- Bug Egg sprite from https://www.deviantart.com/drakhand006/art/Xenomorph-Egg-Icon-328036796
-local defenderBiter = table.deepcopy(data.raw.unit["small-biter"])
-defenderBiter.flags = { "placeable-player", "placeable-off-grid", "breaths-air", "not-repairable", "not-blueprintable"}
-defenderBiter.name = "defender-biter"
-defenderBiter.healing_per_tick = 0
-data:extend{ defenderBiter }
+
+local function add_defender(size)
+    -- Wandering Defender
+    local wanderer_defender = table.deepcopy(data.raw.unit[size.."-biter"])
+    wanderer_defender.name = size.."-biter-defender"
+    --game.players[1].print(wanderer_defender.name)
+    wanderer_defender.flags = { "breaths-air", "not-repairable" }
+    wanderer_defender.healing_per_tick = 0
+    data:extend { wanderer_defender }
+end
+
+add_defender("small")
 
 local biterEgg = table.deepcopy(data.raw["assembling-machine"]["assembling-machine-1"])
 biterEgg.name = "biter-egg"
 biterEgg.subgroup = "biter-egg"
-biterEgg.minable = {mining_time = 1, result = "biter-egg"}
+biterEgg.minable = { mining_time = 1, result = "biter-egg" }
 biterEgg.animation = {
-            layers = {
-                {
-                    apply_projection = false,
-                    direction_count = 1,
-                    filename = "__bio-engineering__/graphics/icons/bug_egg.png",
-                    priority = "high",
-                    shift = util.by_pixel(0, 0),
-                    width = 90,
-                    height = 90,
-                    hr_version =
-                    {
-                        apply_projection = false,
-                        direction_count = 1,
-                        filename = "__bio-engineering__/graphics/icons/bug_egg.png",
-                        priority = "high",
-                        width = 90,
-                        height = 90,
-                        shift = util.by_pixel(0, 0),
-                        scale = 0.5
-                    }
-                }
-	        }
+    layers = {
+        {
+            apply_projection = false,
+            direction_count = 1,
+            filename = "__bio-engineering__/graphics/icons/bug_egg.png",
+            priority = "high",
+            shift = util.by_pixel(0, 0),
+            width = 90,
+            height = 90,
+            hr_version = {
+                apply_projection = false,
+                direction_count = 1,
+                filename = "__bio-engineering__/graphics/icons/bug_egg.png",
+                priority = "high",
+                width = 90,
+                height = 90,
+                shift = util.by_pixel(0, 0),
+                scale = 0.5
+            }
         }
+    }
+}
 biterEgg.crafting_speed = 1
 biterEgg.show_recipe_icon = false
-biterEgg.energy_source = {type = "void"}
+biterEgg.energy_source = { type = "void" }
 biterEgg.fixed_recipe = "defender-biter"
-data:extend{ biterEgg }
+data:extend { biterEgg }

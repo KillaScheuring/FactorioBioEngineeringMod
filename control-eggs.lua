@@ -4,17 +4,42 @@
 --- DateTime: 8/13/2022 11:58 PM
 ---
 
+function unit_go_to(unit, destination)
+    local command = { type = defines.command.go_to_location, destination_entity = destination,
+                      pathfind_flags = { use_cache = false, low_priority = true, allow_destroy_friendly_entities = false },
+                      distraction = defines.distraction.none
+    }
+    unit.set_command(command)
+end
+
+function distance( pos1, pos2 )
+	local dx = pos2.x - pos1.x
+	local dy = pos2.y - pos1.y
+	return( math.sqrt(dx*dx+dy*dy) )
+end
+
 function Monitored_Entities()
-    for k=#global.monitored_entity,1,-1 do
+    local first_player = game.players[1]
+    local entities_to_add = {}
+    for k = #global.monitored_entity, 1, -1 do
         local entity = global.monitored_entity[k].entity
         if not (entity and entity.valid) then
             table.remove(global.monitored_entity, k)
         else
-            if entity.products_finished > 0 then
-                game.surfaces.nauvis.create_entity({ name = "defender-biter", position = entity.position, health = entity.health, force = "player" })
+            if entity.name == ("small-biter-defender") and distance(first_player.character.position, entity.position) >= 10 and
+                    distance(first_player.character.position, entity.position) < 200 then
+                unit_go_to(entity, first_player.character)
+            end
+            if entity.name == "biter-egg" and entity.products_finished > 0 then
+                game.players[1].print("Hatched!")
+                local defenderBiter = game.surfaces.nauvis.create_entity({ name = "small-biter-defender", position = entity.position, health = entity.health, force = "player" })
                 entity.destroy()
                 table.remove(global.monitored_entity, k)
+                table.insert(entities_to_add, defenderBiter)
             end
         end
+    end
+    for i = #entities_to_add, 1, -1 do
+        table.insert(global.monitored_entity, {entity=entities_to_add[i]})
     end
 end
