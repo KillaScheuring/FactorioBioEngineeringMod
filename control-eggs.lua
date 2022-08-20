@@ -7,7 +7,6 @@
 function unit_go_to(unit, destination)
     local command = { type = defines.command.go_to_location, destination_entity = destination,
                       pathfind_flags = { use_cache = false, low_priority = true, allow_destroy_friendly_entities = false },
-                      distraction = defines.distraction.none
     }
     unit.set_command(command)
 end
@@ -20,7 +19,7 @@ end
 
 function Monitored_Entities()
     local first_player = game.players[1]
-    local entities_to_add = {}
+
     for k = #global.monitored_entity, 1, -1 do
         local entity = global.monitored_entity[k].entity
         if not (entity and entity.valid) then
@@ -35,11 +34,8 @@ function Monitored_Entities()
                 local defenderBiter = game.surfaces.nauvis.create_entity({ name = "small-biter-defender", position = entity.position, health = entity.health, force = "player" })
                 entity.destroy()
                 table.remove(global.monitored_entity, k)
-                table.insert(entities_to_add, defenderBiter)
+                table.insert(global.monitored_entity, { entity=defenderBiter })
             end
         end
-    end
-    for i = #entities_to_add, 1, -1 do
-        table.insert(global.monitored_entity, {entity=entities_to_add[i]})
     end
 end

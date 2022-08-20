@@ -5,22 +5,35 @@
 ---
 --- Bug Egg sprite from https://www.deviantart.com/drakhand006/art/Xenomorph-Egg-Icon-328036796
 
-local function add_defender(size)
-    -- Wandering Defender
-    local wanderer_defender = table.deepcopy(data.raw.unit[size.."-biter"])
-    wanderer_defender.name = size.."-biter-defender"
-    --game.players[1].print(wanderer_defender.name)
-    wanderer_defender.flags = { "breaths-air", "not-repairable" }
-    wanderer_defender.healing_per_tick = 0
-    data:extend { wanderer_defender }
+local biter_sizes = { "small", "medium", "big", "behemoth" }
+local enemy_types = { "biter", "spitter", "worm" }
+
+local function add_defender(biter_type)
+    -- Copy the base version of the entity
+    local defender_biter = table.deepcopy(data.raw.unit[biter_type])
+    -- Rename it to add "defender"
+    defender_biter.name = biter_type .. "-defender"
+    -- Add friendly specific attributes
+    defender_biter.flags = { "breaths-air", "not-repairable" }
+    defender_biter.healing_per_tick = 0
+    -- Add the entity
+    data:extend { defender_biter }
 end
 
-add_defender("small")
+add_defender("small-biter")
+
+-- Add the defender versions of all enemies
+--for enemy_type_index = #enemy_types, 1, -1 do
+--    for biter_size_index = #biter_sizes, 1, -1 do
+--        add_defender(enemy_types[enemy_type_index] .. biter_sizes[biter_size_index])
+--    end
+--end
 
 local biterEgg = table.deepcopy(data.raw["assembling-machine"]["assembling-machine-1"])
 biterEgg.name = "biter-egg"
 biterEgg.subgroup = "biter-egg"
-biterEgg.minable = { mining_time = 1, result = "biter-egg" }
+biterEgg.minable = nil
+biterEgg.next_upgrade = nil
 biterEgg.animation = {
     layers = {
         {
@@ -49,3 +62,11 @@ biterEgg.show_recipe_icon = false
 biterEgg.energy_source = { type = "void" }
 biterEgg.fixed_recipe = "defender-biter"
 data:extend { biterEgg }
+
+local function add_defender_egg(biter_to_spawn)
+    local egg = table.deepcopy(data.raw["assembling-machine"]["biter-egg"])
+    egg.name = biter_to_spawn.."-egg"
+    data:extend { biterEgg }
+end
+
+add_defender_egg("small-biter")
